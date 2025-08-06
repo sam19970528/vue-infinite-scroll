@@ -22,6 +22,7 @@
         </p>
       </li>
     </ul>
+    <div ref="observerRef" />
   </div>
 </template>
 
@@ -65,7 +66,20 @@ const fetchRepos = async () => {
   }
 }
 
+const observerRef = ref()
+const myObserver = ref<IntersectionObserver | null>(null)
+const options = {
+  rootMargin: `0px 0px 50px 0px`,
+  threshold: 0
+}
 onMounted(() => {
-  fetchRepos()
+  myObserver.value = new IntersectionObserver(entries => {
+    if (entries[0].isIntersecting) {
+      console.log('isIntersecting')
+
+      fetchRepos()
+    }
+  }, options)
+  myObserver.value.observe(observerRef.value)
 })
 </script>
