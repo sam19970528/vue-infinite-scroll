@@ -39,28 +39,41 @@ interface Repo {
 }
 const repos = ref<Repo[]>([])
 const page = ref(1)
-const perPage = 30
+const perPage = ref(30)
 
 const username = import.meta.env.VITE_GITHUB_USERNAME
+const isEnd = ref(false)
 
 const fetchRepos = async () => {
+  if (isEnd.value) return
   try {
     const res = await axios.get(
       `https://api.github.com/users/${username}/repos`,
       {
         params: {
           page: page.value,
-          per_page: perPage,
+          per_page: perPage.value,
           sort: 'updated'
         }
       }
     )
-    repos.value = res.data.map((item: Repo) => ({
+    const newData = res.data.map((item: Repo) => ({
       id: item.id,
       name: item.name,
       html_url: item.html_url,
       description: item.description
     }))
+    repos.value.push(...newData)
+    // 如果取回的資料不足數量 則代表是最後一頁
+    if (res.data.length < perPage.value) {
+      isEnd.value = true
+      return
+    }
+    page.value++
+    // 第一次取30筆後 之後10筆10筆取
+    if (perPage.value === 30) {
+      perPage.value = 10
+    }
   } catch (err) {
     console.log(err)
   }
