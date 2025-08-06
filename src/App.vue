@@ -23,6 +23,12 @@
       </li>
     </ul>
     <div ref="observerRef" />
+    <div
+      v-if="isEnd"
+      class="text-center text-gray-500 mt-4"
+    >
+      已加載所有 Repositories
+    </div>
   </div>
 </template>
 
