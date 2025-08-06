@@ -1,0 +1,30 @@
+{
+  "env": {
+    "browser": true,
+    "es2021": true
+  },
+  "plugins": ["@typescript-eslint", "vue", "prettier"],
+  "extends": [
+    "eslint:recommended",
+    "plugin:@typescript-eslint/recommended",
+    "plugin:vue/vue3-recommended",
+    "prettier"
+  ],
+  "parserOptions": {
+    "ecmaVersion": "latest",
+    "parser": "@typescript-eslint/parser",
+    "sourceType": "module"
+  },
+  "rules": {
+    // 不符合prettier設置報錯
+    "prettier/prettier": "error",
+    // 不檢查是否引入
+    "no-undef": "off",
+    // 不檢查參數名稱跟外層重複
+    "no-shadow": "off",
+    // 不能用var
+    "no-var": "error",
+    // 不強制設置props的預設值
+    "vue/require-default-prop": "off"
+  }
+}
