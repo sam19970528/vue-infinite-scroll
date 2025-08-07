@@ -40,6 +40,21 @@
       已加載所有 Repositories
     </div>
   </div>
+
+  <div
+    v-if="error"
+    class="fixed bottom-4 right-4 z-50 p-4 rounded-lg shadow-lg bg-red-600 text-white flex justify-between items-center max-w-md"
+    role="alert"
+  >
+    <span>{{ error }}</span>
+    <button
+      class="ml-4 text-2xl font-bold leading-none hover:text-red-100"
+      aria-label="Close"
+      @click="error = null"
+    >
+      &times;
+    </button>
+  </div>
 </template>
 
 <script lang="ts" setup>
@@ -60,6 +75,7 @@ const perPage = ref(30)
 const username = import.meta.env.VITE_GITHUB_USERNAME
 const isEnd = ref(false)
 const isLoading = ref(false)
+const error = ref<string | null>(null)
 
 // 限制function在一定的時間內只能觸發一次
 const throttle = (fn: (...args: any[]) => void, delay: number) => {
@@ -74,6 +90,7 @@ const throttle = (fn: (...args: any[]) => void, delay: number) => {
 }
 
 const fetchRepos = async () => {
+  error.value = null
   if (isEnd.value) {
     isLoading.value = false
     return
@@ -107,7 +124,8 @@ const fetchRepos = async () => {
       perPage.value = 10
     }
   } catch (err) {
-    console.log(err)
+    console.error(err)
+    error.value = 'Failed to fetch repositories. Please try again later.'
   } finally {
     isLoading.value = false
   }
