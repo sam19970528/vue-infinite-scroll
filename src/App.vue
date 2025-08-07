@@ -61,9 +61,23 @@ const username = import.meta.env.VITE_GITHUB_USERNAME
 const isEnd = ref(false)
 const isLoading = ref(false)
 
+// 限制function在一定的時間內只能觸發一次
+const throttle = (fn: (...args: any[]) => void, delay: number) => {
+  let timer: ReturnType<typeof setTimeout> | null = null
+  return (...args: any[]) => {
+    if (timer) return
+    timer = setTimeout(() => {
+      fn(...args)
+      timer = null
+    }, delay)
+  }
+}
+
 const fetchRepos = async () => {
-  if (isEnd.value || isLoading.value) return
-  isLoading.value = true
+  if (isEnd.value) {
+    isLoading.value = false
+    return
+  }
   try {
     const res = await axios.get(
       `https://api.github.com/users/${username}/repos`,
@@ -99,6 +113,8 @@ const fetchRepos = async () => {
   }
 }
 
+const throttledFetchRepos = throttle(fetchRepos, 500)
+
 const observerRef = ref()
 const myObserver = ref<IntersectionObserver | null>(null)
 const options = {
@@ -108,9 +124,8 @@ const options = {
 onMounted(() => {
   myObserver.value = new IntersectionObserver(entries => {
     if (entries[0].isIntersecting) {
-      console.log('isIntersecting')
-
-      fetchRepos()
+      isLoading.value = true
+      throttledFetchRepos()
     }
   }, options)
   myObserver.value.observe(observerRef.value)
