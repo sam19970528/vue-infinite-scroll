@@ -142,7 +142,9 @@ const options = {
 onMounted(() => {
   myObserver.value = new IntersectionObserver(entries => {
     if (entries[0].isIntersecting) {
-      isLoading.value = true
+      if (!isEnd.value) {
+        isLoading.value = true
+      }
       throttledFetchRepos()
     }
   }, options)
