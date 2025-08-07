@@ -43,7 +43,7 @@
 </template>
 
 <script lang="ts" setup>
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, onUnmounted } from 'vue'
 import axios from 'axios'
 
 // 定義需要的欄位
@@ -129,5 +129,8 @@ onMounted(() => {
     }
   }, options)
   myObserver.value.observe(observerRef.value)
+})
+onUnmounted(() => {
+  myObserver.value?.disconnect()
 })
 </script>
