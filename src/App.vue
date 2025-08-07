@@ -22,6 +22,16 @@
         </p>
       </li>
     </ul>
+    <div
+      v-if="isLoading"
+      class="space-y-2"
+    >
+      <div
+        v-for="n in 3"
+        :key="n"
+        class="h-12 bg-gray-200 animate-pulse rounded"
+      ></div>
+    </div>
     <div ref="observerRef" />
     <div
       v-if="isEnd"
@@ -49,9 +59,11 @@ const perPage = ref(30)
 
 const username = import.meta.env.VITE_GITHUB_USERNAME
 const isEnd = ref(false)
+const isLoading = ref(false)
 
 const fetchRepos = async () => {
-  if (isEnd.value) return
+  if (isEnd.value || isLoading.value) return
+  isLoading.value = true
   try {
     const res = await axios.get(
       `https://api.github.com/users/${username}/repos`,
@@ -82,6 +94,8 @@ const fetchRepos = async () => {
     }
   } catch (err) {
     console.log(err)
+  } finally {
+    isLoading.value = false
   }
 }
 
